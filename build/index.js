@@ -5,6 +5,7 @@ exports.writable = stores_1.writable;
 exports.readable = stores_1.readable;
 exports.derived = stores_1.derived;
 exports.persisted = stores_1.persisted;
+exports.persistedAsync = stores_1.persistedAsync;
 exports.get = stores_1.get;
 exports.log = stores_1.log;
 const hooks_1 = require("./hooks");

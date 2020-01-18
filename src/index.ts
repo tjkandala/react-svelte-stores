@@ -1,4 +1,12 @@
-import { writable, readable, derived, persisted, get, log } from "./stores";
+import {
+  writable,
+  readable,
+  derived,
+  persisted,
+  persistedAsync,
+  get,
+  log
+} from "./stores";
 import { useStoreState, useSelectedStoreState } from "./hooks";
 import {
   Selector,
@@ -22,7 +30,7 @@ import {
 // this is strongly-typed, not stringly-typed like redux!
 
 // stores/store fns
-export { writable, readable, derived, persisted, get, log };
+export { writable, readable, derived, persisted, persistedAsync, get, log };
 // hooks
 export { useStoreState, useSelectedStoreState };
 //types
