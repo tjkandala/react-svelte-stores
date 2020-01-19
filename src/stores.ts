@@ -126,10 +126,15 @@ export const persistedAsync = <T>(
   // console.log("1");
   (async () => {
     // console.log("2");
-    const persistedStateString = await AsyncStorage.getItem(storeKey);
+    const persistedStateString: string | null = await AsyncStorage.getItem(
+      storeKey
+    );
     // console.log("4");
-    const persistedState: T = JSON.parse(persistedStateString);
-    set(persistedState);
+
+    if (persistedStateString) {
+      const persistedState: T = JSON.parse(persistedStateString);
+      set(persistedState);
+    }
   })();
 
   // console.log("3");

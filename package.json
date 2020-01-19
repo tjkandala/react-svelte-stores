@@ -1,6 +1,6 @@
 {
   "name": "react-svelte-stores",
-  "version": "0.0.21",
+  "version": "0.1.0",
   "description": "",
   "main": "build/index.js",
   "types": "build",
@@ -13,8 +13,7 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "react": "^16.12.0",
-    "rxjs": "^6.5.4"
+    "react": "^16.12.0"
   },
   "devDependencies": {
     "@react-native-community/async-storage": "^1.7.1",
@@ -55,7 +54,6 @@
     ]
   },
   "dependencies": {
-    "rxjs": "^6.5.4",
-    "localStorage": "^1.0.4"
+    "rxjs": "^6.5.4"
   }
 }

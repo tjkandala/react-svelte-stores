@@ -90,8 +90,10 @@ exports.persistedAsync = (initialState, storeKey, AsyncStorage, throttleMs = 0) 
         // console.log("2");
         const persistedStateString = yield AsyncStorage.getItem(storeKey);
         // console.log("4");
-        const persistedState = JSON.parse(persistedStateString);
-        set(persistedState);
+        if (persistedStateString) {
+            const persistedState = JSON.parse(persistedStateString);
+            set(persistedState);
+        }
     }))();
     // console.log("3");
     const persistor$ = new rxjs_1.Subject();
