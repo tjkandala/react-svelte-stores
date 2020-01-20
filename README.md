@@ -152,10 +152,18 @@ export const searchStore = createSearchStore(defaultSearchStoreState);
 
 `writable`
 
+#### `writable(initialState: T): IWritableStore<T>`
+
 `readable`
+
+#### `writable(initialState: T, setCallback?: ReadableSetCallback<T>): IReadableStore<T>`
 
 `persisted`
 
+#### `persisted(initialState: T, storeKey: string, throttleMs?: number): IWritableStore<T>`
+
 `persistedAsync`
 
-#### Custom
+#### `persistedAsync(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic, throttleMs?: number): IWritableStore<T>`
+
+Custom stores must expose the subscribe function to be usable with hooks.
