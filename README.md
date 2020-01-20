@@ -66,7 +66,7 @@ const SearchResults: FC = () => {
     <FlatList
       data={searchResults}
       keyExtractor={item => item.id}
-      renderItem={({item}) => <YourItemComponent item="item />}
+      renderItem={({item}) => <YourItemComponent item={item} />}
     />
   );
 }
