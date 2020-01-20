@@ -74,6 +74,7 @@ const SearchResults: FC = () => {
 
 `src/stores/searchStore`
 ```ts
+import { persistedAsync } from 'react-svelte-stores';
 import { AsyncStorage } from 'react-native';
 
 interface ISearchStoreState {
