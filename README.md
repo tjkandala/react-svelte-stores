@@ -148,21 +148,11 @@ export const searchStore = createSearchStore(defaultSearchStoreState);
 
 ### Stores
 
-#### Primitive
-
-`writable`
-
 #### `writable(initialState: T): IWritableStore<T>`
 
-`readable`
-
-#### `writable(initialState: T, setCallback?: ReadableSetCallback<T>): IReadableStore<T>`
-
-`persisted`
+#### `readable(initialState: T, setCallback?: ReadableSetCallback<T>): IReadableStore<T>`
 
 #### `persisted(initialState: T, storeKey: string, throttleMs?: number): IWritableStore<T>`
-
-`persistedAsync`
 
 #### `persistedAsync(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic, throttleMs?: number): IWritableStore<T>`
 
