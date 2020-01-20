@@ -26,3 +26,57 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 - I recommend using react-svelte-stores when you have a narrow and shallow state tree, or a wide and shallow state tree. When you have deep state trees and find yourself needing performance optimizations such as memoized selectors (compatible w/ react-svelte-stores), you should use Redux. React-Redux has a lot of performance benefits that react-svelte-stores will never match because I use it for prototyping.
 
 ## Examples
+
+```ts
+interface ISearchStoreState {
+  searchTerm: string;
+  loading: boolean;
+  searchResults: Array<SearchResult>
+}
+
+const defaultSearchStoreState = {
+  searchTerm: "",
+  loading: false,
+  searchResults:[]
+};
+
+const createSearchStore = (initialState: ISearchStoreState) => {
+  const { subscribe, update, set } = persisted(
+    initialState,
+    "@yourApp/searchStore"
+  );
+
+  const searchTerm$: Subject<string> = new Subject();
+  const autocomplete$ = searchTerm$.pipe(
+    filter(searchTerm => searchTerm.length > 0),
+    debounceTime(700),
+    distinctUntilChanged(),
+    switchMap(searchTerm =>
+      ajax.getJSON(`https://yourSearchApiHere.com/${searchTerm}`).pipe(
+        catchError(err => {
+          console.log(err);
+          return of(err);
+        })
+      )
+    )
+  );
+
+  autocomplete$.subscribe((response: Array<SearchResult>) => update(state => ({
+    ...state,
+    loading: false
+    searchResults: response
+  }));
+
+  return {
+    subscribe,
+    setSearchTerm: (searchTerm: string) => {
+      update(state => ({
+        ...state,
+        loading: searchTerm.length ? true : false,
+        searchTerm
+      }));
+      searchTerm$.next(searchTerm);
+    }
+  };
+};
+```
