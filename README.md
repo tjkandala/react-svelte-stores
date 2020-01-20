@@ -137,11 +137,7 @@ export const searchStore = createSearchStore(defaultSearchStoreState);
 
 ### Hooks
 
-`useStoreState`
-
 #### `useStoreState(store: IStore<T>): T`
-
-`useSelectedStoreState`
 
 #### `useSelectedStoreState(store: IStore<T>, selector: <T, R>(state: T) => R): R`
 
