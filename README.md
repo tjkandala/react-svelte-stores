@@ -9,9 +9,11 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 - I really enjoy using Svelte for rapid prototyping. Svelte's stores, like most Svelte features, allow you to focus on features, not boilerplate.
 
-- I wanted to use Svelte stores with React Native and with TypeScript.
+- Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
 - I wanted to use a state management library with persistence built-in. Use `persisted` (for localStorage) and `persistedAsync` (for AsyncStorage) to create a store that automatically serializes and rehydrates its state.
+
+- I wanted to use Svelte stores with React Native and with TypeScript.
 
 - No need for `Provider`, `mapStateToProps`, `mapDispatchToProps`, etc. Just plug your store into a react-svelte-stores hook and write a concise component that is a pure function of your store's state. "Dispatch actions" by calling your custom store object methods.
 
@@ -27,7 +29,53 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Examples
 
+### Easy React Native Autocomplete Search
+
+`src/components/searchInput`
 ```ts
+import React, { FC } from 'react'
+import { View, Text, TextInput } from 'react-native'
+import { searchStore } from '../stores/searchStore'
+
+
+const SearchInput: FC = () => {
+  const searchTerm = useSelectedStoreState(searchStore, state => state.searchTerm);
+
+  return (
+    <View>
+      <TextInput
+        placeholder="search"
+        value={searchTerm}
+        onChangeText={searchStore.setSearchTerm}
+      />
+    </View>
+  );
+}
+```
+
+`src/components/searchResults`
+```ts
+import React, { FC } from 'react'
+import { View, FlatList } from 'react-native'
+import { searchStore } from '../stores/searchStore'
+
+const SearchResults: FC = () => {
+  const searchResults = useSelectedStoreState(searchStore, state => state.searchResults);
+  
+  return (
+    <FlatList
+      data={searchResults}
+      keyExtractor={item => item.id}
+      renderItem={({item}) => <YourItemComponent item="item />}
+    />
+  );
+}
+```
+
+`src/stores/searchStore`
+```ts
+import { AsyncStorage } from 'react-native';
+
 interface ISearchStoreState {
   searchTerm: string;
   loading: boolean;
@@ -41,9 +89,10 @@ const defaultSearchStoreState = {
 };
 
 const createSearchStore = (initialState: ISearchStoreState) => {
-  const { subscribe, update, set } = persisted(
+  const { subscribe, update, set } = persistedAsync(
     initialState,
-    "@yourApp/searchStore"
+    "@yourApp/searchStore",
+    AsyncStorage
   );
 
   const searchTerm$: Subject<string> = new Subject();
@@ -79,4 +128,34 @@ const createSearchStore = (initialState: ISearchStoreState) => {
     }
   };
 };
+
+export const searchStore = createSearchStore(defaultSearchStoreState);
 ```
+
+## API Reference
+
+### Hooks
+
+`useStoreState`
+
+#### `useStoreState(store: IStore<T>): T`
+
+`useSelectedStoreState`
+
+#### `useSelectedStoreState(store: IStore<T>, selector: <T, R>(state: T) => R): R`
+
+* Compatible with reselect
+
+### Stores
+
+#### Primitive
+
+`writable`
+
+`readable`
+
+`persisted`
+
+`persistedAsync`
+
+#### Custom
