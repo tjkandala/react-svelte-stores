@@ -23,9 +23,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Usage
 
-- react-svelte-stores are meant for applications that require shared state, but will never grow to need Redux or other more robust state management libraries. I would place it in between the React Context API and Redux in terms of power.
-
-- I recommend using react-svelte-stores when you have a narrow and shallow state tree, or a wide and shallow state tree. When you have deep state trees and find yourself needing performance optimizations such as memoized selectors (compatible w/ react-svelte-stores), you should use Redux. React-Redux has a lot of performance benefits that react-svelte-stores will never match because I use it for prototyping.
+(TODO: When to use RSS)
 
 ## Examples
 
