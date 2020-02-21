@@ -25,6 +25,8 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Examples
 
+(TODO: a more straightforward example)
+
 ### Easy React Native Autocomplete Search
 
 `src/components/searchInput`
