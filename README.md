@@ -25,7 +25,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Examples
 
-(TODO: a more straightforward example)
+(TODO: a more straightforward example. Explain how RSS works and why it is conducive to simpler code)
 
 ### Easy React Native Autocomplete Search
 
