@@ -73,4 +73,9 @@ describe("hooks", () => {
 
     expect(result.current).toBe(4);
   });
+
+  // TODO
+  // test("selector deps", () => {
+  //   const store = writable(todoState)
+  // })
 });
