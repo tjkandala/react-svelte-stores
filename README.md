@@ -19,8 +19,6 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 - [Less code, fewer bugs](https://blog.codinghorror.com/the-best-code-is-no-code-at-all/). Static-typing and unit-testability are cherries on top!
 
-- \*When I'm ready to make a "final version"/"production quality" application, I reach for Redux and Redux Observable. Redux's debugging experience and predictabilty are unmatched. However, react-svelte-stores and vanilla RxJS make development so easy that I use them for all prototypes/PoCs.
-
 ## Usage
 
 (TODO: When to use RSS)
