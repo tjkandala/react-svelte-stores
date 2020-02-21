@@ -19,15 +19,13 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 - [Less code, fewer bugs](https://blog.codinghorror.com/the-best-code-is-no-code-at-all/). Static-typing and unit-testability are cherries on top!
 
-- \*When I'm ready to make a "final version"/"production quality" application, I reach for Redux and Redux Observable. Redux's debugging experience and predictabilty are unmatched. However, react-svelte-stores and vanilla RxJS make development so easy that I use them for all prototypes/PoCs.
-
 ## Usage
 
-- react-svelte-stores are meant for applications that require shared state, but will never grow to need Redux or other more robust state management libraries. I would place it in between the React Context API and Redux in terms of power.
-
-- I recommend using react-svelte-stores when you have a narrow and shallow state tree, or a wide and shallow state tree. When you have deep state trees and find yourself needing performance optimizations such as memoized selectors (compatible w/ react-svelte-stores), you should use Redux. React-Redux has a lot of performance benefits that react-svelte-stores will never match because I use it for prototyping.
+(TODO: When to use RSS)
 
 ## Examples
+
+(TODO: a more straightforward example. Explain how RSS works and why it is conducive to simpler code. Use persisted store with memoized selectors to demonstrate built in power)
 
 ### Easy React Native Autocomplete Search
 
