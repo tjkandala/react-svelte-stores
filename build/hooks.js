@@ -18,8 +18,6 @@ exports.useSelectedStoreState = (store, selector, selectorDeps) => {
     react_1.useLayoutEffect(() => {
         if (subRef.current) {
             subRef.current.unsubscribe();
-        }
-        if (selectorDeps) {
             setState(selector(stores_1.get(store)));
         }
         subRef.current = store.subscribe(state => setState(selector(state)));

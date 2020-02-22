@@ -32,9 +32,6 @@ export const useSelectedStoreState = <T, R>(
     () => {
       if (subRef.current) {
         subRef.current.unsubscribe();
-      }
-
-      if (selectorDeps) {
         setState(selector(get(store)));
       }
 
