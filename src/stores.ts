@@ -94,8 +94,15 @@ export const persisted = <T>(
     persistedState = null;
   }
 
+  // fix for boolean stores: persisted "false" when initial state is "true" resulted in
+  // an effective state reset on refresh. this happens bc check for persisted state will return false even
+  // if it exists (bc the value is literally false)
   const { subscribe, update, asyncUpdate, set } = writable(
-    persistedState ? persistedState : initialState
+    typeof persistedState === "boolean"
+      ? persistedState
+      : persistedState
+      ? persistedState
+      : initialState
   );
 
   const persistor$ = new Subject();
