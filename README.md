@@ -7,7 +7,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Why?
 
-- After I started using [statecharts](https://statecharts.github.io/) to manage complex state instead of Redux, I needed to different way to communicate between distant components without prop-drilling. 
+- After I started using [statecharts](https://statecharts.github.io/) to manage complex state, instead of Redux, I needed to different way to communicate between distant components without prop-drilling. 
 
 - Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
