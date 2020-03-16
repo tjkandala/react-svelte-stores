@@ -7,7 +7,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Why?
 
-- I really enjoy using Svelte for rapid prototyping. Svelte's stores, like most Svelte features, allow you to focus on features, not boilerplate.
+- After I started using [statecharts](https://statecharts.github.io/) to manage complex state instead of Redux, I needed to different way to communicate between distant components without prop-drilling. 
 
 - Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
@@ -15,9 +15,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 - I wanted to use Svelte stores with React Native and with TypeScript.
 
-- No need for `Provider`, `mapStateToProps`, `mapDispatchToProps`, etc. Just plug your store into a react-svelte-stores hook and write a concise component that is a pure function of your store's state. "Dispatch actions" by calling your custom store object methods.
-
-- [Less code, fewer bugs](https://blog.codinghorror.com/the-best-code-is-no-code-at-all/). Static-typing and unit-testability are cherries on top!
+- I wanted a "cleaner" API than React's Context. 
 
 ## Usage
 
