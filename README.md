@@ -17,6 +17,12 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ### FSM Audio Player
 
+You can use react-svelte-stores to create a finite state machine component that can receive messages from other components.
+
+- The state enum or string union represents the vertices of a state diagram.
+- The switch cases in the reducer function represent the edges of a state diagram; the transitions between states.
+- Side effects are handled in `useEffect` 
+
 
 ### Persisted Service
 
