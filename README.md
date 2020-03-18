@@ -32,10 +32,12 @@ import {
 } from "react-svelte-stores";
 
 type State = {
+  // possible states
   status: "loading" | "playing" | "paused";
   time: number;
 };
 
+// discriminated union of possible actions
 type Action =
   | { type: "LOADED" }
   | { type: "PLAY" }
@@ -46,6 +48,7 @@ const reducer = (state: State, action: Action): State => {
   switch (state.status) {
     case "loading":
       switch (action.type) {
+        // state transitions based on state ("status") and event ("action")
         case "LOADED":
           return {
             ...state,
@@ -162,8 +165,37 @@ const Player: FC = () => {
     </div>
   );
 };
-
 ```
+Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by 
+importing `playerFSM` and calling `playerFSM.dispatch`! Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument. 
+
+`OtherComponent.tsx`
+```typescript
+const OtherComponent: FC = () => {
+  const playerStatus = useSelectedStoreState(playerFSM, state => state.status);
+
+  switch (playerStatus) {
+    case "loading":
+      return null;
+
+    case "playing":
+      return (
+        <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
+          pause
+        </button>
+      );
+
+    case "paused":
+      return (
+        <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
+          play
+        </button>
+      );
+  }
+};
+```
+
+This approach makes it (nearly?) impossible to reach impossible states, while making cross-component communication clean and easy. You can even dispatch actions without subscribing to the FSM store. This style of reducer function, which considers the previous state as well as the action, was inspired by [this David K. Piano tweet](https://twitter.com/davidkpiano/status/1171062893984526336?lang=en)
 
 ### Persisted Service
 
