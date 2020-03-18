@@ -129,7 +129,7 @@ const Player: FC = () => {
     }
   }, [playerState.status]);
 
-  return (
+   return (
     <div>
       <audio
         ref={audio}
@@ -141,30 +141,27 @@ const Player: FC = () => {
           })
         }
       />
-      <p>Current Time: {playerState.time}</p>
-          {(() => {
+      {playerState.status !== "loading" && (
+        <p>Current Time: {playerState.time}</p>
+      )}
+
+      {(() => {
         switch (playerState.status) {
           case "loading":
             return <p>loading...</p>;
 
           case "playing":
             return (
-              <div>
-                <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
-                  pause
-                </button>
-                <p>Current Time: {playerState.time}</p>
-              </div>
+              <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
+                pause
+              </button>
             );
 
           case "paused":
             return (
-              <div>
-                <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
-                  play
-                </button>
-                <p>Current Time: {playerState.time}</p>
-              </div>
+              <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
+                play
+              </button>
             );
         }
       })()}
