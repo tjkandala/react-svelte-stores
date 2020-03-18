@@ -17,7 +17,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ### FSM Audio Player
 
-You can use react-svelte-stores to create a finite state machine component that can receive messages from other components.
+You can use react-svelte-stores to create a finite state machine component that can receive messages from other components. Let's implement a minimal audio player to demonstrate this pattern.
 
 - The discriminated union of states represents the vertices of a state diagram.
 - The switch cases in the reducer function represent the edges of a state diagram; the transitions between states.
