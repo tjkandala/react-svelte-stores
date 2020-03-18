@@ -103,6 +103,9 @@ const createReducibleStore = (
 
   return {
     subscribe,
+    // react-svelte-store's update method takes a callback that receives the current state, and returns the next state.
+    // we can create a dispatch method by taking an action, then passing the current state and the action 
+    // into the reducer function within the update function.
     dispatch: (action: Action) => update(state => reducer(state, action))
   };
 };
