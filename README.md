@@ -13,7 +13,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 - Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
-## Examples
+## Recipes
 
 ### FSM Audio Player
 
@@ -166,8 +166,9 @@ const Player: FC = () => {
   );
 };
 ```
-Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by 
-importing `playerFSM` and calling `playerFSM.dispatch`! Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument. 
+- Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by 
+importing `playerFSM` and calling `playerFSM.dispatch`! 
+- Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument. 
 
 `OtherComponent.tsx`
 ```typescript
