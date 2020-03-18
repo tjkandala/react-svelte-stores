@@ -19,7 +19,7 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 You can use react-svelte-stores to create a finite state machine component that can receive messages from other components.
 
-- The state enum or string union represents the vertices of a state diagram.
+- The discriminated union of states represents the vertices of a state diagram.
 - The switch cases in the reducer function represent the edges of a state diagram; the transitions between states.
 - Side effects are handled in `useEffect` 
 
@@ -31,11 +31,11 @@ import {
   useStoreState
 } from "react-svelte-stores";
 
-type State = {
-  // possible states
-  status: "loading" | "playing" | "paused";
-  time: number;
-};
+// discriminated union of possible states. 
+type State =
+  | { status: "loading" }
+  | { status: "playing"; time: number }
+  | { status: "paused"; time: number };
 
 // discriminated union of possible actions
 type Action =
@@ -53,7 +53,8 @@ const reducer = (state: State, action: Action): State => {
         case "LOADED":
           return {
             ...state,
-            status: "playing"
+            status: "playing",
+            time: 0
           };
 
         default:
@@ -107,8 +108,7 @@ const createReducibleStore = (
 };
 
 const initialState: State = {
-  status: "loading",
-  time: 0
+  status: "loading"
 };
 
 const playerFSM = createReducibleStore(initialState, reducer);
@@ -142,23 +142,29 @@ const Player: FC = () => {
         }
       />
       <p>Current Time: {playerState.time}</p>
-      {(() => {
+          {(() => {
         switch (playerState.status) {
           case "loading":
             return <p>loading...</p>;
 
           case "playing":
             return (
-              <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
-                pause
-              </button>
+              <div>
+                <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
+                  pause
+                </button>
+                <p>Current Time: {playerState.time}</p>
+              </div>
             );
 
           case "paused":
             return (
-              <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
-                play
-              </button>
+              <div>
+                <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
+                  play
+                </button>
+                <p>Current Time: {playerState.time}</p>
+              </div>
             );
         }
       })()}
