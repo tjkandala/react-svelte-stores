@@ -45,10 +45,11 @@ type Action =
   | { type: "UPDATE_TIME"; time: number };
 
 const reducer = (state: State, action: Action): State => {
+  // state transitions based on state ("status") and event ("action")
   switch (state.status) {
+    // when in the "loading" state, only react to "LOADED" action
     case "loading":
       switch (action.type) {
-        // state transitions based on state ("status") and event ("action")
         case "LOADED":
           return {
             ...state,
@@ -58,7 +59,8 @@ const reducer = (state: State, action: Action): State => {
         default:
           return state;
       }
-
+  
+    // when in the "playing" state, react to "PAUSE" and "UPDATE_TIME" actions
     case "playing":
       switch (action.type) {
         case "PAUSE":
@@ -77,6 +79,7 @@ const reducer = (state: State, action: Action): State => {
           return state;
       }
 
+    // when in the "paused" state, only react to "PLAY" action
     case "paused":
       switch (action.type) {
         case "PLAY":
@@ -88,9 +91,6 @@ const reducer = (state: State, action: Action): State => {
         default:
           return state;
       }
-
-    default:
-      return state;
   }
 };
 
