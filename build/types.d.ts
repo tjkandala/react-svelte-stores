@@ -1,4 +1,4 @@
-import { Subscription } from "rxjs";
+import { Subscription } from "./stateful_stream";
 export declare type Selector<T, R> = (store: T) => R;
 export declare type SubscriptionCallback<T> = (state: T) => void;
 export interface IStore<T> {

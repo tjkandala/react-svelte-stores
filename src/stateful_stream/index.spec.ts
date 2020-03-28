@@ -36,4 +36,40 @@ describe("stateful stream", () => {
 
     expect(streamedValues).toStrictEqual([1, 2, 3]);
   });
+
+  test("multiple subscribers", () => {
+    const dblStream = new StatefulStream(2);
+
+    const firstStreamVals: Array<number> = [];
+    const secondStreamVals: Array<number> = [];
+
+    const firstSub = dblStream.subscribe(v => firstStreamVals.push(v));
+    dblStream.next(4);
+    const secondStream = dblStream.subscribe(v => secondStreamVals.push(v));
+    dblStream.next(6);
+    firstSub.unsubscribe();
+    dblStream.next(8);
+    dblStream.next(10);
+
+    expect(firstStreamVals).toStrictEqual([2, 4, 6]);
+    expect(secondStreamVals).toStrictEqual([4, 6, 8, 10]);
+  });
+
+  test("multiple subscribers, same callback", () => {
+    const dblStream = new StatefulStream(2);
+
+    const compositeStreamVals: Array<number> = [];
+
+    const subCallback = (v: number) => compositeStreamVals.push(v);
+
+    const firstSub = dblStream.subscribe(subCallback);
+    dblStream.next(4);
+    const secondStream = dblStream.subscribe(subCallback);
+    dblStream.next(6);
+    firstSub.unsubscribe();
+    dblStream.next(8);
+    dblStream.next(10);
+
+    expect(compositeStreamVals).toStrictEqual([2, 4, 4, 6, 6, 8, 10]);
+  });
 });

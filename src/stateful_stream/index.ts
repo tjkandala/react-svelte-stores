@@ -9,22 +9,29 @@ export type Subscription = {
 
 export class StatefulStream<T> {
   private value: T;
-  // using Map for O(1) unsubscription
-  subscribers: Map<StreamCallback<T>, boolean>;
+  /** subCount to derive id. don't decrement on unsub */
+  private subCount: number;
+  // using Map for O(1) unsubscription. need id tho.
+  subscribers: Map<number, StreamCallback<T>>;
 
   constructor(initalState: T) {
     this.value = initalState;
+    this.subCount = 0;
     this.subscribers = new Map();
   }
 
   subscribe(callback: StreamCallback<T>): Subscription {
-    this.subscribers.set(callback, true);
+    const id = this.subCount;
+
+    this.subscribers.set(id, callback);
+
+    this.subCount++;
 
     callback(this.value);
 
     // close over reference to this.subscribers
     const removeSub = (): void => {
-      this.subscribers.delete(callback);
+      this.subscribers.delete(id);
     };
 
     return {
@@ -38,7 +45,7 @@ export class StatefulStream<T> {
 
   next(value: T): void {
     this.value = value;
-    this.subscribers.forEach((_, k) => k(value));
+    this.subscribers.forEach(v => v(value));
   }
 
   /** for testing, or if you really need only the current value */

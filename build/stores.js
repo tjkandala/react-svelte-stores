@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const stateful_stream_1 = require("./stateful_stream");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 if (typeof localStorage === "undefined" || localStorage === null) {
@@ -16,36 +17,36 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 }
 /** Initializes a writable store */
 exports.writable = (initialState) => {
-    const store = new rxjs_1.BehaviorSubject(initialState);
+    const statefulStream = new stateful_stream_1.StatefulStream(initialState);
     return {
-        subscribe: callback => store.subscribe(callback),
+        subscribe: callback => statefulStream.subscribe(callback),
         /** Pass the update method a callback to update the store */
         update: updateFunction => {
-            const nextState = updateFunction(store.value);
-            store.next(nextState);
+            const nextState = updateFunction(statefulStream._getValue());
+            statefulStream.next(nextState);
         },
         asyncUpdate: (updateFunction) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                const updatePromise = updateFunction(store.value);
+                const updatePromise = updateFunction(statefulStream._getValue());
                 const nextState = yield updatePromise;
-                store.next(nextState);
+                statefulStream.next(nextState);
             }
             catch (err) {
                 console.error(err);
             }
         }),
-        set: nextState => store.next(nextState)
+        set: nextState => statefulStream.next(nextState)
     };
 };
 /** Initializes a readable store */
 exports.readable = (initialState, setCallback) => {
-    const store = new rxjs_1.BehaviorSubject(initialState);
-    const setFn = nextState => store.next(nextState);
+    const statefulStream = new stateful_stream_1.StatefulStream(initialState);
+    const setFn = nextState => statefulStream.next(nextState);
     if (setCallback) {
         setCallback(setFn);
     }
     return {
-        subscribe: callback => store.subscribe(callback)
+        subscribe: callback => statefulStream.subscribe(callback)
     };
 };
 /** Initializes a derived store. Typically, you should just make a custom writable/persisted store and subscribe to slices of its state with selectors. */
