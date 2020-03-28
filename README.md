@@ -7,129 +7,207 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Why?
 
-- I really enjoy using Svelte for rapid prototyping. Svelte's stores, like most Svelte features, allow you to focus on features, not boilerplate.
+- I wanted a good set of primitives with which I could __build custom state management solutions__.
+
+- I wanted a "cleaner" API than React's Context. 
 
 - Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
-- I wanted to use a state management library with persistence built-in. Use `persisted` (for localStorage) and `persistedAsync` (for AsyncStorage) to create a store that automatically serializes and rehydrates its state.
+## Recipes
 
-- I wanted to use Svelte stores with React Native and with TypeScript.
+### FSM Audio Player
 
-- No need for `Provider`, `mapStateToProps`, `mapDispatchToProps`, etc. Just plug your store into a react-svelte-stores hook and write a concise component that is a pure function of your store's state. "Dispatch actions" by calling your custom store object methods.
+You can use react-svelte-stores to create a finite state machine component that can receive messages from other components. Let's implement a minimal audio player to demonstrate this pattern.
 
-- [Less code, fewer bugs](https://blog.codinghorror.com/the-best-code-is-no-code-at-all/). Static-typing and unit-testability are cherries on top!
+- The discriminated union of states represents the vertices of a state diagram.
+- The switch cases in the reducer function represent the edges of a state diagram; the transitions between states.
+- Side effects are handled in `useEffect` 
 
-## Usage
+`Player.tsx`
+```typescript
+import React, { FC, useEffect, useRef } from "react";
+import {
+  writable,
+  useStoreState
+} from "react-svelte-stores";
 
-(TODO: When to use RSS)
+// discriminated union of possible states. 
+type State =
+  | { status: "loading" }
+  | { status: "playing"; time: number }
+  | { status: "paused"; time: number };
 
-## Examples
+// discriminated union of possible actions
+type Action =
+  | { type: "LOADED" }
+  | { type: "PLAY" }
+  | { type: "PAUSE" }
+  | { type: "UPDATE_TIME"; time: number };
 
-(TODO: a more straightforward example. Explain how RSS works and why it is conducive to simpler code. Use persisted store with memoized selectors to demonstrate built in power)
+const reducer = (state: State, action: Action): State => {
+  // state transitions based on state ("status") and event ("action")
+  switch (state.status) {
+    // when in the "loading" state, only react to "LOADED" action
+    case "loading":
+      switch (action.type) {
+        case "LOADED":
+          return {
+            ...state,
+            status: "playing",
+            time: 0
+          };
 
-### Easy React Native Autocomplete Search
-
-`src/components/searchInput`
-```ts
-import React, { FC } from 'react'
-import { View, Text, TextInput } from 'react-native'
-import { searchStore } from '../stores/searchStore'
-
-
-const SearchInput: FC = () => {
-  const searchTerm = useSelectedStoreState(searchStore, state => state.searchTerm);
-
-  return (
-    <View>
-      <TextInput
-        placeholder="search"
-        value={searchTerm}
-        onChangeText={searchStore.setSearchTerm}
-      />
-    </View>
-  );
-}
-```
-
-`src/components/searchResults`
-```ts
-import React, { FC } from 'react'
-import { View, FlatList } from 'react-native'
-import { searchStore } from '../stores/searchStore'
-
-const SearchResults: FC = () => {
-  const searchResults = useSelectedStoreState(searchStore, state => state.searchResults);
+        default:
+          return state;
+      }
   
-  return (
-    <FlatList
-      data={searchResults}
-      keyExtractor={item => item.id}
-      renderItem={({item}) => <YourItemComponent item={item} />}
-    />
-  );
-}
-```
+    // when in the "playing" state, react to "PAUSE" and "UPDATE_TIME" actions
+    case "playing":
+      switch (action.type) {
+        case "PAUSE":
+          return {
+            ...state,
+            status: "paused"
+          };
 
-`src/stores/searchStore`
-```ts
-import { persistedAsync } from 'react-svelte-stores';
-import { AsyncStorage } from 'react-native';
+        case "UPDATE_TIME":
+          return {
+            ...state,
+            time: action.time
+          };
 
-interface ISearchStoreState {
-  searchTerm: string;
-  loading: boolean;
-  searchResults: Array<SearchResult>
-}
+        default:
+          return state;
+      }
 
-const defaultSearchStoreState = {
-  searchTerm: "",
-  loading: false,
-  searchResults:[]
+    // when in the "paused" state, only react to "PLAY" action
+    case "paused":
+      switch (action.type) {
+        case "PLAY":
+          return {
+            ...state,
+            status: "playing"
+          };
+
+        default:
+          return state;
+      }
+  }
 };
 
-const createSearchStore = (initialState: ISearchStoreState) => {
-  const { subscribe, update, set } = persistedAsync(
-    initialState,
-    "@yourApp/searchStore",
-    AsyncStorage
-  );
-
-  const searchTerm$: Subject<string> = new Subject();
-  const autocomplete$ = searchTerm$.pipe(
-    filter(searchTerm => searchTerm.length > 0),
-    debounceTime(700),
-    distinctUntilChanged(),
-    switchMap(searchTerm =>
-      ajax.getJSON(`https://yourSearchApiHere.com/${searchTerm}`).pipe(
-        catchError(err => {
-          console.log(err);
-          return of(err);
-        })
-      )
-    )
-  );
-
-  autocomplete$.subscribe((response: Array<SearchResult>) => update(state => ({
-    ...state,
-    loading: false
-    searchResults: response
-  }));
+const createReducibleStore = (
+  initialState: State,
+  reducer: (state: State, action: Action) => State
+) => {
+  const { subscribe, update } = writable(initialState);
 
   return {
     subscribe,
-    setSearchTerm: (searchTerm: string) => {
-      update(state => ({
-        ...state,
-        loading: searchTerm.length ? true : false,
-        searchTerm
-      }));
-      searchTerm$.next(searchTerm);
-    }
+    // react-svelte-store's update method takes a callback that receives the current state, 
+    // and returns the next state.
+    // we can create a dispatch method by taking an action,
+    // then passing the current state and the action 
+    // into the reducer function within the update function.
+    dispatch: (action: Action) => update(state => reducer(state, action))
   };
 };
 
-export const searchStore = createSearchStore(defaultSearchStoreState);
+const initialState: State = {
+  status: "loading"
+};
+
+const playerFSM = createReducibleStore(initialState, reducer);
+
+const Player: FC = () => {
+  const playerState = useStoreState(playerFSM);
+
+  const audio = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    // side effects on state transitions
+    if (playerState.status === "playing") {
+      audio.current?.play();
+    }
+
+    if (playerState.status === "paused") {
+      audio.current?.pause();
+    }
+  }, [playerState.status]);
+
+   return (
+    <div>
+      <audio
+        ref={audio}
+        src=""
+        onTimeUpdate={e =>
+          playerFSM.dispatch({
+            type: "UPDATE_TIME",
+            time: e.currentTarget.currentTime
+          })
+        }
+      />
+      {playerState.status !== "loading" && (
+        <p>Current Time: {playerState.time}</p>
+      )}
+
+      {(() => {
+        switch (playerState.status) {
+          case "loading":
+            return <p>loading...</p>;
+
+          case "playing":
+            return (
+              <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
+                pause
+              </button>
+            );
+
+          case "paused":
+            return (
+              <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
+                play
+              </button>
+            );
+        }
+      })()}
+    </div>
+  );
+};
 ```
+- Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by 
+importing `playerFSM` and calling `playerFSM.dispatch`! 
+- Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument. 
+
+`OtherComponent.tsx`
+```typescript
+const OtherComponent: FC = () => {
+  const playerStatus = useSelectedStoreState(playerFSM, state => state.status);
+
+  switch (playerStatus) {
+    case "loading":
+      return null;
+
+    case "playing":
+      return (
+        <button onClick={() => playerFSM.dispatch({ type: "PAUSE" })}>
+          pause
+        </button>
+      );
+
+    case "paused":
+      return (
+        <button onClick={() => playerFSM.dispatch({ type: "PLAY" })}>
+          play
+        </button>
+      );
+  }
+};
+```
+
+This approach makes it (nearly?) impossible to reach impossible states, while making cross-component communication clean and easy. You can even dispatch actions without subscribing to the FSM store. This style of reducer function, which considers the previous state as well as the action, was inspired by [this David K. Piano tweet](https://twitter.com/davidkpiano/status/1171062893984526336?lang=en)
+
+### Persisted Service
+
 
 ## API Reference
 
