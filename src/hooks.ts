@@ -1,7 +1,7 @@
-import { useState, useLayoutEffect, useEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import { IStore } from "./types";
 import { get } from "./stores";
-import { Subscription } from "rxjs";
+import { Subscription } from "./stateful_stream";
 
 type Selector<T, R> = (store: T) => R;
 

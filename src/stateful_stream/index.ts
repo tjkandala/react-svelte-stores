@@ -1,6 +1,6 @@
-type StreamCallback<T> = (value: T) => void;
+export type StreamCallback<T> = (value: T) => void;
 
-type Subscription = {
+export type Subscription = {
   /** Destroys subscription to stateful stream */
   unsubscribe: () => void;
   /** have you unsubscribed/has the stream been closed */

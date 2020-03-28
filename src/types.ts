@@ -1,4 +1,4 @@
-import { Subscription } from "rxjs";
+import { Subscription } from "./stateful_stream";
 
 export type Selector<T, R> = (store: T) => R;
 

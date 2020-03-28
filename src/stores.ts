@@ -1,5 +1,6 @@
 import { IWritableStore, IReadableStore, IStore } from "./types";
-import { BehaviorSubject, Subject } from "rxjs";
+import { StatefulStream } from "./stateful_stream";
+import { Subject } from "rxjs";
 import { throttleTime } from "rxjs/operators";
 if (typeof localStorage === "undefined" || localStorage === null) {
   var localStorage: any = require("localStorage");
@@ -10,27 +11,27 @@ import AsyncStorage, {
 
 /** Initializes a writable store */
 export const writable = <T>(initialState: T): IWritableStore<T> => {
-  const store = new BehaviorSubject(initialState);
+  const statefulStream = new StatefulStream(initialState);
 
   return {
-    subscribe: callback => store.subscribe(callback),
+    subscribe: callback => statefulStream.subscribe(callback),
     /** Pass the update method a callback to update the store */
     update: updateFunction => {
-      const nextState = updateFunction(store.value);
+      const nextState = updateFunction(statefulStream._getValue());
 
-      store.next(nextState);
+      statefulStream.next(nextState);
     },
     asyncUpdate: async updateFunction => {
       try {
-        const updatePromise = updateFunction(store.value);
+        const updatePromise = updateFunction(statefulStream._getValue());
         const nextState = await updatePromise;
 
-        store.next(nextState);
+        statefulStream.next(nextState);
       } catch (err) {
         console.error(err);
       }
     },
-    set: nextState => store.next(nextState)
+    set: nextState => statefulStream.next(nextState)
   };
 };
 
@@ -43,16 +44,16 @@ export const readable = <T>(
   initialState: T,
   setCallback?: ReadableSetCallback<T>
 ): IReadableStore<T> => {
-  const store = new BehaviorSubject(initialState);
+  const statefulStream = new StatefulStream(initialState);
 
-  const setFn: SetFunction<T> = nextState => store.next(nextState);
+  const setFn: SetFunction<T> = nextState => statefulStream.next(nextState);
 
   if (setCallback) {
     setCallback(setFn);
   }
 
   return {
-    subscribe: callback => store.subscribe(callback)
+    subscribe: callback => statefulStream.subscribe(callback)
   };
 };
 
@@ -73,10 +74,6 @@ export function derived<A, R>(
     subscribe
   };
 }
-
-// type StorageEngine = "localStorage";
-// TODO: Support for AsyncStorage
-// type StorageEngine = "localStorage" | "AsyncStorage";
 
 interface IPersistedStore<T> extends IWritableStore<T> {}
 

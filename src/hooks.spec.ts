@@ -13,8 +13,8 @@ interface ITodoState {
 }
 
 const firstTodo = { id: 1, label: "ball" };
-const secondTodo = { id: 2, label: "write blog post" };
-const thirdTodo = { id: 3, label: "post to IG" };
+const secondTodo = { id: 2, label: "post to reddit" };
+const thirdTodo = { id: 3, label: "finish library" };
 
 const todoState: ITodoState = {
   todos: [firstTodo, secondTodo, thirdTodo]
@@ -74,7 +74,8 @@ describe("hooks", () => {
     expect(result.current).toBe(4);
   });
 
-  // TODO
+  // TODO: Test selector deps. They are working in production, but
+  // write a test to detect regressions
   // test("selector deps", () => {
   //   const store = writable(todoState)
   // })

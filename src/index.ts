@@ -18,8 +18,6 @@ import {
   AsyncUpdateFunction
 } from "./types";
 
-// TODO: Fix JSDoc for object methods!
-
 // stores/store fns
 export { writable, readable, derived, persisted, persistedAsync, get, log };
 // hooks
