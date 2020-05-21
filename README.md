@@ -7,9 +7,9 @@ Inspired by [Svelte](https://svelte.dev/tutorial/writable-stores)
 
 ## Why?
 
-- I wanted a good set of primitives with which I could __build custom state management solutions__.
+- I wanted a good set of primitives with which I could **build custom state management solutions**.
 
-- I wanted a "cleaner" API than React's Context. 
+- I wanted a "cleaner" API than React's Context.
 
 - Gateway drug to Svelte, or a way for people who already love Svelte to write Svelte-like code in React.
 
@@ -21,17 +21,15 @@ You can use react-svelte-stores to create a finite state machine component that 
 
 - The discriminated union of states represents the vertices of a state diagram.
 - The switch cases in the reducer function represent the edges of a state diagram; the transitions between states.
-- Side effects are handled in `useEffect` 
+- Side effects are handled in `useEffect`
 
 `Player.tsx`
+
 ```typescript
 import React, { FC, useEffect, useRef } from "react";
-import {
-  writable,
-  useStoreState
-} from "react-svelte-stores";
+import { writable, useStoreState } from "react-svelte-stores";
 
-// discriminated union of possible states. 
+// discriminated union of possible states.
 type State =
   | { status: "loading" }
   | { status: "playing"; time: number }
@@ -54,26 +52,26 @@ const reducer = (state: State, action: Action): State => {
           return {
             ...state,
             status: "playing",
-            time: 0
+            time: 0,
           };
 
         default:
           return state;
       }
-  
+
     // when in the "playing" state, react to "PAUSE" and "UPDATE_TIME" actions
     case "playing":
       switch (action.type) {
         case "PAUSE":
           return {
             ...state,
-            status: "paused"
+            status: "paused",
           };
 
         case "UPDATE_TIME":
           return {
             ...state,
-            time: action.time
+            time: action.time,
           };
 
         default:
@@ -86,7 +84,7 @@ const reducer = (state: State, action: Action): State => {
         case "PLAY":
           return {
             ...state,
-            status: "playing"
+            status: "playing",
           };
 
         default:
@@ -103,17 +101,17 @@ const createReducibleStore = (
 
   return {
     subscribe,
-    // react-svelte-store's update method takes a callback that receives the current state, 
+    // react-svelte-store's update method takes a callback that receives the current state,
     // and returns the next state.
     // we can create a dispatch method by taking an action,
-    // then passing the current state and the action 
+    // then passing the current state and the action
     // into the reducer function within the update function.
-    dispatch: (action: Action) => update(state => reducer(state, action))
+    dispatch: (action: Action) => update((state) => reducer(state, action)),
   };
 };
 
 const initialState: State = {
-  status: "loading"
+  status: "loading",
 };
 
 const playerFSM = createReducibleStore(initialState, reducer);
@@ -134,15 +132,15 @@ const Player: FC = () => {
     }
   }, [playerState.status]);
 
-   return (
+  return (
     <div>
       <audio
         ref={audio}
         src=""
-        onTimeUpdate={e =>
+        onTimeUpdate={(e) =>
           playerFSM.dispatch({
             type: "UPDATE_TIME",
-            time: e.currentTarget.currentTime
+            time: e.currentTarget.currentTime,
           })
         }
       />
@@ -174,14 +172,19 @@ const Player: FC = () => {
   );
 };
 ```
-- Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by 
-importing `playerFSM` and calling `playerFSM.dispatch`! 
-- Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument. 
+
+- Music applications commonly allow you to pause or play tracks from components other than the track player. We can do this by
+  importing `playerFSM` and calling `playerFSM.dispatch`!
+- Because we need to know whether the player is playing or paused, we subscribe to the store state. In order to prevent unnecessary rerenders when the time is updated (we only care about the player status, not the time), we use `useSelectedStoreState`, which takes a selector function as its second argument.
 
 `OtherComponent.tsx`
+
 ```typescript
 const OtherComponent: FC = () => {
-  const playerStatus = useSelectedStoreState(playerFSM, state => state.status);
+  const playerStatus = useSelectedStoreState(
+    playerFSM,
+    (state) => state.status
+  );
 
   switch (playerStatus) {
     case "loading":
@@ -208,7 +211,6 @@ This approach makes it (nearly?) impossible to reach impossible states, while ma
 
 ### Persisted Service
 
-
 ## API Reference
 
 ### Hooks
@@ -217,7 +219,7 @@ This approach makes it (nearly?) impossible to reach impossible states, while ma
 
 #### `useSelectedStoreState(store: IStore<T>, selector: <T, R>(state: T) => R): R`
 
-* Compatible with reselect
+- Compatible with reselect
 
 ### Stores
 
@@ -225,8 +227,8 @@ This approach makes it (nearly?) impossible to reach impossible states, while ma
 
 #### `readable(initialState: T, setCallback?: ReadableSetCallback<T>): IReadableStore<T>`
 
-#### `persisted(initialState: T, storeKey: string, throttleMs?: number): IWritableStore<T>`
+#### `persisted(initialState: T, storeKey: string): IWritableStore<T>`
 
-#### `persistedAsync(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic, throttleMs?: number): IWritableStore<T>`
+#### `persistedAsync(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic): IWritableStore<T>`
 
 Custom stores must expose the subscribe function to be usable with hooks.

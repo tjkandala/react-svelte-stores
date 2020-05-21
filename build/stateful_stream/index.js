@@ -3,14 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class StatefulStream {
     constructor(initalState) {
         this.value = initalState;
+        this.subCount = 0;
         this.subscribers = new Map();
     }
     subscribe(callback) {
-        this.subscribers.set(callback, true);
+        const id = this.subCount;
+        this.subscribers.set(id, callback);
+        this.subCount++;
         callback(this.value);
         // close over reference to this.subscribers
         const removeSub = () => {
-            this.subscribers.delete(callback);
+            this.subscribers.delete(id);
         };
         return {
             unsubscribe() {
@@ -22,7 +25,7 @@ class StatefulStream {
     }
     next(value) {
         this.value = value;
-        this.subscribers.forEach((_, k) => k(value));
+        this.subscribers.forEach(v => v(value));
     }
     /** for testing, or if you really need only the current value */
     _getValue() {

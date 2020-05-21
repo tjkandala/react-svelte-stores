@@ -12,9 +12,9 @@ export declare function derived<A, R>(store: IStore<A>, deriveStateCallback: Der
 interface IPersistedStore<T> extends IWritableStore<T> {
 }
 /** Initializes a persisted writable store. 0ms throttle by default. For use with localStorage */
-export declare const persisted: <T>(initialState: T, storeKey: string, throttleMs?: number) => IPersistedStore<T>;
+export declare const persisted: <T>(initialState: T, storeKey: string) => IPersistedStore<T>;
 /** Initializes a persisted writable store. 0ms throttle by default. For use with AsyncStorage (React Native) */
-export declare const persistedAsync: <T>(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic, throttleMs?: number) => IPersistedStore<T>;
+export declare const persistedAsync: <T>(initialState: T, storeKey: string, AsyncStorage: AsyncStorageStatic) => IPersistedStore<T>;
 /** Get current value of a store without subscribing to it */
 export declare const get: <T>(store: IStore<T>) => T;
 /** Log your store's state changes over time, helpful for debugging */

@@ -7,7 +7,9 @@ export declare type Subscription = {
 };
 export declare class StatefulStream<T> {
     private value;
-    subscribers: Map<StreamCallback<T>, boolean>;
+    /** subCount to derive id. don't decrement on unsub */
+    private subCount;
+    subscribers: Map<number, StreamCallback<T>>;
     constructor(initalState: T);
     subscribe(callback: StreamCallback<T>): Subscription;
     next(value: T): void;

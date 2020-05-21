@@ -10,8 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const stateful_stream_1 = require("./stateful_stream");
-const rxjs_1 = require("rxjs");
-const operators_1 = require("rxjs/operators");
 if (typeof localStorage === "undefined" || localStorage === null) {
     var localStorage = require("localStorage");
 }
@@ -19,9 +17,9 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 exports.writable = (initialState) => {
     const statefulStream = new stateful_stream_1.StatefulStream(initialState);
     return {
-        subscribe: callback => statefulStream.subscribe(callback),
+        subscribe: (callback) => statefulStream.subscribe(callback),
         /** Pass the update method a callback to update the store */
-        update: updateFunction => {
+        update: (updateFunction) => {
             const nextState = updateFunction(statefulStream._getValue());
             statefulStream.next(nextState);
         },
@@ -35,33 +33,35 @@ exports.writable = (initialState) => {
                 console.error(err);
             }
         }),
-        set: nextState => statefulStream.next(nextState)
+        set: (nextState) => statefulStream.next(nextState),
     };
 };
 /** Initializes a readable store */
 exports.readable = (initialState, setCallback) => {
     const statefulStream = new stateful_stream_1.StatefulStream(initialState);
-    const setFn = nextState => statefulStream.next(nextState);
+    const setFn = (nextState) => statefulStream.next(nextState);
     if (setCallback) {
         setCallback(setFn);
     }
     return {
-        subscribe: callback => statefulStream.subscribe(callback)
+        subscribe: (callback) => statefulStream.subscribe(callback),
     };
 };
 /** Initializes a derived store. Typically, you should just make a custom writable/persisted store and subscribe to slices of its state with selectors. */
 function derived(store, deriveStateCallback) {
     const { subscribe, set } = exports.writable(deriveStateCallback(exports.get(store)));
-    store.subscribe(state => {
+    store.subscribe((state) => {
         set(deriveStateCallback(state));
     });
     return {
-        subscribe
+        subscribe,
     };
 }
 exports.derived = derived;
 /** Initializes a persisted writable store. 0ms throttle by default. For use with localStorage */
-exports.persisted = (initialState, storeKey, throttleMs = 0) => {
+exports.persisted = (initialState, storeKey
+// throttleMs: number = 0
+) => {
     const persistedStateString = localStorage.getItem(storeKey);
     let persistedState;
     if (persistedStateString) {
@@ -78,20 +78,27 @@ exports.persisted = (initialState, storeKey, throttleMs = 0) => {
         : persistedState
             ? persistedState
             : initialState);
-    const persistor$ = new rxjs_1.Subject();
-    subscribe(state => persistor$.next(state));
-    persistor$
-        .pipe(operators_1.throttleTime(throttleMs))
-        .subscribe(state => localStorage.setItem(storeKey, JSON.stringify(state)));
+    /** This used to be an RxJS Subject. write a good throttle util
+     * for StatefulStream instead */
+    // const persistor$ = new StatefulStream(initialState);
+    // subscribe((state) => persistor$.next(state));
+    subscribe((state) => localStorage.setItem(storeKey, JSON.stringify(state)));
+    // persistor$
+    //   .pipe(throttleTime(throttleMs))
+    //   .subscribe((state) =>
+    //     localStorage.setItem(storeKey, JSON.stringify(state))
+    //   );
     return {
         subscribe,
         update,
         asyncUpdate,
-        set
+        set,
     };
 };
 /** Initializes a persisted writable store. 0ms throttle by default. For use with AsyncStorage (React Native) */
-exports.persistedAsync = (initialState, storeKey, AsyncStorage, throttleMs = 0) => {
+exports.persistedAsync = (initialState, storeKey, AsyncStorage
+// throttleMs: number = 0
+) => {
     const { subscribe, update, asyncUpdate, set } = exports.writable(initialState);
     // console.log("1");
     (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -104,30 +111,31 @@ exports.persistedAsync = (initialState, storeKey, AsyncStorage, throttleMs = 0) 
         }
     }))();
     // console.log("3");
-    const persistor$ = new rxjs_1.Subject();
-    subscribe(state => persistor$.next(state));
-    persistor$.pipe(operators_1.throttleTime(throttleMs)).subscribe((state) => __awaiter(void 0, void 0, void 0, function* () {
-        yield AsyncStorage.setItem(storeKey, JSON.stringify(state));
-    }));
+    // const persistor$ = new StatefulStream(initialState);
+    subscribe((state) => AsyncStorage.setItem(storeKey, JSON.stringify(state)));
+    // subscribe((state) => persistor$.next(state));
+    // persistor$.pipe(throttleTime(throttleMs)).subscribe(async (state) => {
+    //   await AsyncStorage.setItem(storeKey, JSON.stringify(state));
+    // });
     return {
         subscribe,
         update,
         asyncUpdate,
-        set
+        set,
     };
 };
 /** Get current value of a store without subscribing to it */
 exports.get = (store) => {
     let value;
-    store.subscribe(state => (value = state)).unsubscribe();
+    store.subscribe((state) => (value = state)).unsubscribe();
     return value;
 };
 /** Log your store's state changes over time, helpful for debugging */
 exports.log = (name, store) => {
-    store.subscribe(state => {
+    store.subscribe((state) => {
         console.log({
             store: name,
-            state: state
+            state: state,
         });
     });
 };

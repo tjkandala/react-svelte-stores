@@ -1,6 +1,6 @@
 {
   "name": "react-svelte-stores",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "",
   "main": "build/index.js",
   "types": "build",
@@ -56,7 +56,6 @@
     ]
   },
   "dependencies": {
-    "rxjs": "^6.5.4",
     "localStorage": "^1.0.4"
   }
 }

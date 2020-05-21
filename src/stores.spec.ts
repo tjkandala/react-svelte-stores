@@ -5,20 +5,20 @@ var localStorage: any = require("localStorage");
 describe("readable store", () => {
   test("works", () => {
     const store = readable(1);
-    store.subscribe(state => expect(state).toBe(1));
+    store.subscribe((state) => expect(state).toBe(1));
   });
 
   test("set function works", () => {
-    const store = readable(1, set => set(2));
-    store.subscribe(state => expect(state).toBe(2));
+    const store = readable(1, (set) => set(2));
+    store.subscribe((state) => expect(state).toBe(2));
   });
 
   test("set function works with settimeout", async () => {
-    const store = readable(1, set => {
+    const store = readable(1, (set) => {
       setTimeout(() => set(2), 1000);
     });
     expect(get(store)).toBe(1);
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
     expect(get(store)).toBe(2);
   });
 });
@@ -26,9 +26,9 @@ describe("readable store", () => {
 describe("derived store", () => {
   test("works", () => {
     const originalStore = writable(1);
-    const derivedStore = derived(originalStore, state => state.toString());
+    const derivedStore = derived(originalStore, (state) => state.toString());
     expect(get(derivedStore)).toBe("1");
-    originalStore.update(state => state + 1);
+    originalStore.update((state) => state + 1);
     expect(get(derivedStore)).toBe("2");
   });
 });
@@ -36,22 +36,22 @@ describe("derived store", () => {
 describe("writable store", () => {
   test("works", () => {
     const store = writable(1);
-    store.subscribe(state => expect(state).toBe(1));
+    store.subscribe((state) => expect(state).toBe(1));
   });
 
   test("update works", () => {
     const store = writable(1);
-    store.update(state => state + 1);
-    store.subscribe(state => expect(state).toBe(2));
+    store.update((state) => state + 1);
+    store.subscribe((state) => expect(state).toBe(2));
   });
 
   test("async update works", async () => {
     const store = writable(1);
-    store.asyncUpdate(async state => {
+    store.asyncUpdate(async (state) => {
       return state + 1;
     });
     expect(get(store)).toBe(1);
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(get(store)).toBe(2);
   });
 });
@@ -63,11 +63,11 @@ describe("custom store", () => {
 
       return {
         subscribe,
-        increment: () => update(state => state + 1),
+        increment: () => update((state) => state + 1),
         incrementBy: (incrementor: number) =>
-          update(state => state + incrementor),
-        decrement: () => update(state => state - 1),
-        reset: () => set(initialState)
+          update((state) => state + incrementor),
+        decrement: () => update((state) => state - 1),
+        reset: () => set(initialState),
       };
     };
     const counterStore = createCounter(1);
@@ -82,7 +82,7 @@ describe("custom store", () => {
     counterStore.reset();
     expect(get(counterStore)).toBe(1);
 
-    counterStore.subscribe(state => expect(state).toBe(1));
+    counterStore.subscribe((state) => expect(state).toBe(1));
   });
 });
 
@@ -91,7 +91,7 @@ describe("persisted store", () => {
   test("works", () => {
     const obj = { id: 1, label: "ball" };
 
-    const store = persisted(obj, "obj", 0);
+    const store = persisted(obj, "obj");
     expect(get(store)).toBe(obj);
 
     const nextState = { id: 2, label: "code" };
