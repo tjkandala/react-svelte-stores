@@ -28,7 +28,7 @@
     "jest": "^25.5.4",
     "mock-async-storage": "^2.2.0",
     "react": "^16.13.1",
-    "react-native": "^0.61.5",
+    "react-native": "^0.62.3",
     "react-test-renderer": "^16.13.1",
     "reselect": "^4.0.0",
     "rimraf": "^3.0.2",
